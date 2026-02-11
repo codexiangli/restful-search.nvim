@@ -267,7 +267,7 @@ git push -u origin main
 ```lua
 return {
     {
-        "你的用户名/restful-search.nvim",
+        "codexiangli/restful-search.nvim",
         dependencies = {
             "nvim-telescope/telescope.nvim", -- 可选，终端 Neovim 用
         },
