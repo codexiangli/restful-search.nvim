@@ -9,7 +9,7 @@
 - 支持 Controller `implements` 接口的模式（注解在接口上，实现在 Controller 中）
 - 支持 `@FeignClient` 端点扫描
 - 支持多种注解格式：`@GetMapping("/path")`、`@RequestMapping(value = "/path", method = RequestMethod.POST)` 等
-- 终端 Neovim 使用 Telescope 搜索，Cursor/VSCode 使用 Quick Pick
+- 终端 Neovim 使用 Snacks/Telescope 搜索，Cursor/VSCode 使用 Quick Pick
 - 内置缓存，首次扫描后即时搜索
 
 ## 效果预览
