@@ -80,7 +80,38 @@ local function goto_endpoint(endpoint)
 	end
 end
 
---- 使用 Telescope 搜索（终端 Neovim）
+--- 使用 Snacks picker 搜索
+---@param endpoints table[]
+local function search_with_snacks(endpoints)
+	local items = {}
+	for _, ep in ipairs(endpoints) do
+		table.insert(items, {
+			text = format_endpoint(ep),
+			file = ep.file,
+			pos = { ep.line, 0 },
+			endpoint = ep,
+		})
+	end
+
+	require("snacks").picker({
+		title = "RestfulSearch - API Endpoints",
+		items = items,
+		format = function(item)
+			return {
+				{ item.text },
+			}
+		end,
+		confirm = function(picker, item)
+			picker:close()
+			if item then
+				goto_endpoint(item.endpoint)
+			end
+		end,
+		preview = "file",
+	})
+end
+
+--- 使用 Telescope 搜索
 ---@param endpoints table[]
 local function search_with_telescope(endpoints)
 	local pickers = require("telescope.pickers")
@@ -148,12 +179,15 @@ function M.search(opts)
 		return
 	end
 
-	-- 根据环境选择 UI
+	-- 根据环境选择 UI：Cursor → vim.ui.select，终端 → Snacks > Telescope > vim.ui.select
 	if vim.g.vscode then
 		search_with_ui_select(endpoints)
 	else
-		local ok, _ = pcall(require, "telescope")
-		if ok then
+		local has_snacks, _ = pcall(require, "snacks")
+		local has_telescope, _ = pcall(require, "telescope")
+		if has_snacks then
+			search_with_snacks(endpoints)
+		elseif has_telescope then
 			search_with_telescope(endpoints)
 		else
 			search_with_ui_select(endpoints)
@@ -201,5 +235,3 @@ function M.setup(opts)
 		M.info()
 	end, { desc = "Show RestfulSearch cache info" })
 end
-
-return M
