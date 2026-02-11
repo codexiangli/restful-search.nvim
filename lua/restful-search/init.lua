@@ -235,3 +235,5 @@ function M.setup(opts)
 		M.info()
 	end, { desc = "Show RestfulSearch cache info" })
 end
+
+return M
