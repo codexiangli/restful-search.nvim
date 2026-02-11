@@ -60,11 +60,19 @@ end
 local function goto_endpoint(endpoint)
 	if vim.g.vscode then
 		local vscode = require("vscode")
-		-- 用 Neovim 打开文件，然后延迟设置光标
-		vim.cmd("edit " .. vim.fn.fnameescape(endpoint.file))
-		vim.defer_fn(function()
-			pcall(vim.api.nvim_win_set_cursor, 0, { endpoint.line, 0 })
-		end, 200)
+		-- 使用 vscode.eval 直接调用 VSCode API 打开文件并跳转
+		vscode.eval_async(
+			[[
+			const uri = vscode.Uri.file(args[0]);
+			const line = args[1] - 1;
+			const doc = await vscode.workspace.openTextDocument(uri);
+			const editor = await vscode.window.showTextDocument(doc, { preview: false });
+			const pos = new vscode.Position(line, 0);
+			editor.selection = new vscode.Selection(pos, pos);
+			editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+		]],
+			{ args = { endpoint.file, endpoint.line } }
+		)
 	else
 		vim.cmd("edit " .. vim.fn.fnameescape(endpoint.file))
 		vim.api.nvim_win_set_cursor(0, { endpoint.line, 0 })
