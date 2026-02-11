@@ -66,7 +66,7 @@ return {
 -- lazy.nvim
 return {
     {
-        "你的用户名/restful-search.nvim",
+        "codexiangli/restful-search.nvim",
         config = function()
             require("restful-search").setup()
         end,
