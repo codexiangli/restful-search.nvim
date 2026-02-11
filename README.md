@@ -25,56 +25,23 @@
 
 ## 安装
 
-### 方式一：本地目录（推荐开发阶段）
-
-将插件目录放在 Neovim 配置中：
-
-```
-~/.config/nvim/lua/plugins/restful-search-nvim/
-├── lua/
-│   └── restful-search/
-│       ├── init.lua
-│       ├── parser.lua
-│       ├── scanner.lua
-│       └── cache.lua
-└── plugin/
-    └── restful-search.lua
-```
-
-lazy.nvim 配置：
-
-```lua
--- ~/.config/nvim/lua/plugins/restful-search.lua
-return {
-    {
-        dir = vim.fn.stdpath("config") .. "/lua/plugins/restful-search-nvim",
-        name = "restful-search.nvim",
-        config = function()
-            require("restful-search").setup()
-        end,
-        keys = {
-            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints" },
-            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search" },
-        },
-    },
-}
-```
-
-### 方式二：从 GitHub 安装
-
 ```lua
 -- lazy.nvim
 return {
     {
         "codexiangli/restful-search.nvim",
+        dependencies = {
+            "folke/snacks.nvim", -- 可选，终端 Neovim 用
+            "nvim-telescope/telescope.nvim", -- 可选，终端 Neovim 用
+        },
         config = function()
             require("restful-search").setup({
                 root_markers = { "pom.xml", "build.gradle", ".git" },
             })
         end,
         keys = {
-            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints", },
-            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search", },
+            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints" },
+            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search" },
         },
     },
 }
@@ -163,7 +130,7 @@ public interface UserClient extends IUserController {
 
 插件自动检测 `vim.g.vscode` 环境：
 
-- **终端 Neovim**：使用 Telescope picker（模糊搜索 + 文件预览）
+- **终端 Neovim**：使用 Snacks pickewr / Telescope picker（模糊搜索 + 文件预览）
 - **Cursor/VSCode**：使用 `vim.ui.select`（VSCode Quick Pick 渲染）
 
 在 Cursor 的 keymaps.lua 中需要额外添加映射：
@@ -177,106 +144,6 @@ if vim.g.vscode then
         require("restful-search").refresh()
     end, { desc = "Refresh & search API endpoints" })
 end
-```
-
-## 插件架构
-
-```
-lua/restful-search/
-├── init.lua      入口：setup()、search()、refresh()、info()
-│                 - 检测项目根目录（优先 .git）
-│                 - 管理缓存读写
-│                 - 根据环境选择 Telescope 或 vim.ui.select
-│
-├── parser.lua    解析引擎
-│                 - 解析 @RequestMapping/@GetMapping 等注解
-│                 - 提取 implements/extends 关系
-│                 - 提取 @FeignClient 注解
-│                 - 解析方法签名和行号
-│
-├── scanner.lua   扫描器（三遍扫描）
-│                 - 第一遍：解析所有 Java 文件，分类 Controller/Interface/FeignClient
-│                 - 第二遍：构建 Controller 端点（拼接接口路径 + 匹配实现行号）
-│                 - 第三遍：处理 FeignClient 端点（去重）
-│
-└── cache.lua     缓存
-                  - 按项目根目录缓存
-                  - 支持手动刷新
-```
-
-## 将插件上传到 GitHub
-
-### 步骤一：创建独立项目目录
-
-```bash
-mkdir ~/projects/restful-search.nvim
-cd ~/projects/restful-search.nvim
-```
-
-### 步骤二：复制插件文件
-
-```bash
-# 复制插件源码
-mkdir -p lua/restful-search plugin
-cp ~/.config/nvim/lua/plugins/restful-search-nvim/lua/restful-search/*.lua lua/restful-search/
-cp ~/.config/nvim/lua/plugins/restful-search-nvim/plugin/*.lua plugin/
-
-# 复制 README
-cp ~/.config/nvim/lua/plugins/restful-search-nvim/README.md .
-```
-
-### 步骤三：最终目录结构
-
-```
-restful-search.nvim/
-├── README.md
-├── lua/
-│   └── restful-search/
-│       ├── init.lua
-│       ├── parser.lua
-│       ├── scanner.lua
-│       └── cache.lua
-└── plugin/
-    └── restful-search.lua
-```
-
-### 步骤四：初始化 Git 并上传
-
-```bash
-cd ~/projects/restful-search.nvim
-git init
-git add .
-git commit -m "feat: 初始版本 - Spring Boot API 端点搜索插件"
-
-# 在 GitHub 上创建仓库后
-git remote add origin git@github.com:你的用户名/restful-search.nvim.git
-git branch -M main
-git push -u origin main
-```
-
-### 步骤五：其他人如何使用
-
-安装后在 lazy.nvim 中配置：
-
-```lua
-return {
-    {
-        "codexiangli/restful-search.nvim",
-        dependencies = {
-            "folke/snacks.nvim", -- 可选，终端 Neovim 用
-            "nvim-telescope/telescope.nvim", -- 可选，终端 Neovim 用
-        },
-        config = function()
-            require("restful-search").setup({
-                root_markers = { "pom.xml", "build.gradle", ".git" },
-            })
-        end,
-        keys = {
-            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints" },
-            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search" },
-        },
-    },
-}
 ```
 
 ## 已知限制
