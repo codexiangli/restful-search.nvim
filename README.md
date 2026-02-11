@@ -68,24 +68,18 @@ return {
     {
         "codexiangli/restful-search.nvim",
         config = function()
-            require("restful-search").setup()
+            require("restful-search").setup({
+                root_markers = { "pom.xml", "build.gradle", ".git" },
+            })
         end,
         keys = {
-            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints" },
-            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search" },
+            { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints", },
+            { "<leader>sE", function() require("restful-search").refresh() end, desc = "Refresh & search", },
         },
     },
 }
 ```
 
-## 配置
-
-```lua
-require("restful-search").setup({
-    -- 项目根目录检测标记文件
-    root_markers = { "pom.xml", "build.gradle", ".git" },
-})
-```
 
 ## 命令
 
@@ -269,10 +263,13 @@ return {
     {
         "codexiangli/restful-search.nvim",
         dependencies = {
+            "folke/snacks.nvim", -- 可选，终端 Neovim 用
             "nvim-telescope/telescope.nvim", -- 可选，终端 Neovim 用
         },
         config = function()
-            require("restful-search").setup()
+            require("restful-search").setup({
+                root_markers = { "pom.xml", "build.gradle", ".git" },
+            })
         end,
         keys = {
             { "<leader>se", function() require("restful-search").search() end,  desc = "Search API endpoints" },
