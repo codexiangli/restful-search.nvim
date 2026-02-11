@@ -1,0 +1,3 @@
+-- plugin/restful-search.lua
+-- 延迟加载，不在这里自动 setup
+-- setup 由 lazy.nvim 的 config 调用
