@@ -76,7 +76,8 @@ function M.scan(root_dir)
 			if info.is_feign_client then
 				table.insert(feign_clients, info)
 			end
-			if info.is_interface and info.class_path then
+			-- 接口只要有方法级 mapping 即可，不要求 class_path（无类级 @RequestMapping）
+			if info.is_interface and info.class_name then
 				interfaces[info.class_name] = info
 			end
 		end
