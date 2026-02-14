@@ -19,6 +19,7 @@ local MAPPING_ANNOTATIONS = {
 ---   @RequestMapping(value = "/path")
 ---   @RequestMapping(value = "/path", method = RequestMethod.POST)
 ---   @PostMapping(value = "/path")
+---   @RequestMapping({"/path"}) 或 @RequestMapping(value = {"/path"})
 ---@param annotation_str string 注解内容（括号内）
 ---@return string|nil path
 local function extract_path(annotation_str)
@@ -40,6 +41,12 @@ local function extract_path(annotation_str)
 
 	-- path = "/path"
 	path = annotation_str:match('path%s*=%s*"([^"]*)"')
+	if path then
+		return path
+	end
+
+	-- 数组格式: @RequestMapping({"/path"}) 或 value = {"/path"}
+	path = annotation_str:match('%{%s*"([^"]*)"')
 	if path then
 		return path
 	end
