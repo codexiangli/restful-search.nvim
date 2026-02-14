@@ -80,7 +80,7 @@ local function goto_endpoint(endpoint)
 	end
 end
 
---- 使用 Snacks picker 搜索
+--- 使用 Snacks picker 搜索（带高亮，与 <leader>sg 风格一致）
 ---@param endpoints table[]
 local function search_with_snacks(endpoints)
 	local items = {}
@@ -96,9 +96,16 @@ local function search_with_snacks(endpoints)
 	require("snacks").picker({
 		title = "RestfulSearch - API Endpoints",
 		items = items,
-		format = function(item)
+		format = function(item, picker)
+			local ep = item.endpoint
+			local method = string.format("%-7s", ep.http_method or "GET")
+			local filename = vim.fn.fnamemodify(ep.file, ":t")
+			-- 分段高亮：METHOD | PATH | → | file:line（与 Snacks grep/file 一致，便于模糊匹配高亮）
 			return {
-				{ item.text },
+				{ method, "SnacksPickerGitType" },
+				{ ep.path, "SnacksPickerFile" },
+				{ "  →  ", "SnacksPickerDelim" },
+				{ filename .. ":" .. ep.line, "SnacksPickerRow" },
 			}
 		end,
 		confirm = function(picker, item)
